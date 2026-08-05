@@ -1,0 +1,12 @@
+ID,Name,Type,Link,Status,DueDate,Comments,Flagged,FlagNote
+1,Stanford CCOP CORE Application,Scholarship,https://www.ccop.stanford.edu/core,Open,2026-03-01,Requires student login,false,
+2,Stanford Research Opportunities,Internship,https://ccop.stanford.edu/more-opportunities,Open,2026-03-30,About 6 programs for community college students,false,
+3,NASA Internship Program,Internship,https://www.nasa.gov/learning-resources/nasa-community-college,Open,2026-03-31,,false,
+4,MESA,Scholarship,https://example.com/mesa-scholarship,Open,2026-03-31,,false,
+5,Microfluid Summer Research Program,Internship,https://www.stanfordmicrofluidics.com/summer-program,Close,2026-03-31,,false,
+6,Nano Stanford Internship,Internship,https://nanolabs.stanford.edu/education/internships,Close,2026-04-05,,false,
+7,Department of Energy Community College Internship Program,Internship,https://careers.slac.stanford.edu/community-college-internship-cci,Close,2026-04-17,,false,
+8,Stanford University Aeronautics & Astronautics Community Research Experience (AACRE),Scholarship,https://bit.ly/AACRE2025,Open,2026-04-08,AACRE is a 10-week summer program. Need student login,false,
+9,Stanford Nephrology Pre-Renal Initiative,Scholarship,https://med.stanford.edu/nephrology/education/prerenal.html,On Hold,2026-04-26,Check back for Summer 2027,false,
+10,Genentech Community College Internship Program,Internship,https://careers.gene.com/us/en/job/202511-129848/2026-Summer-Genentech-Community-College-Internship-Program-Operations,Close,2026-08-05,,false,
+11,Stanford Cardio Vascular Institute Summer Research Program,Scholarship,https://med.stanford.edu/cvi/education/cvi-summer-research-program.html,Open,2026-12-19,,false,

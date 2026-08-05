@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpTrack — Staff Edit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0E2A47; --navy-2:#163A5F; --orange:#E2793D; --gold:#F5C518; --gold-dark:#C99A00;
+    --bg-page:#FAFBFD; --panel:#FFFFFF; --panel-2:#F5F8FB;
+    --card-blue:#EAF3FB; --card-blue-border:#BFDDF0;
+    --text-primary:#16324F; --text-muted:#5B6B7C;
+    --green:#2E9E5B; --amber:#B9790A; --gray:#8A96A3; --red:#C0392B;
+    --divider:#E3E9EF; --focus:#1F6FB2;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg-page); color:var(--text-primary); font-family:'Inter',sans-serif; min-height:100vh;}
+  a{color:var(--navy-2);}
+  .wrap{max-width:1050px; margin:0 auto; padding:32px 20px 80px;}
+  h1.title{font-weight:800; font-size:clamp(28px,6vw,40px); margin:0 0 4px; color:var(--navy);}
+  .subtitle{font-size:13px; color:var(--text-muted); margin-bottom:24px;}
+  .back-link{font-size:13px; font-weight:600; text-decoration:none; display:inline-block; margin-bottom:18px; color:var(--navy-2);}
+
+  #gate{background:var(--navy); color:#fff; border-radius:14px; border-top:6px solid var(--orange); padding:32px; max-width:460px; margin-top:20px;}
+  #gate label{font-size:12px; color:#CBD9E7; display:block; margin-bottom:8px;}
+  #gate input{width:100%; font-size:13px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.25); color:#fff; padding:10px 12px; border-radius:6px; margin-bottom:14px;}
+  #gate button, .primary-btn{background:var(--gold); color:var(--navy); border:none; font-weight:700; font-size:13px; padding:10px 18px; border-radius:20px; cursor:pointer;}
+  #gate button:hover, .primary-btn:hover{filter:brightness(1.05);}
+  #gate p{font-size:12px; color:#CBD9E7; line-height:1.6;}
+  #gateError{color:#FFC7BC; font-size:12px; margin:-6px 0 10px; display:none;}
+
+  #app{display:none;}
+  .whoami{font-size:12px; font-weight:600; color:var(--green); margin-bottom:18px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .whoami button{background:#fff; border:1px solid var(--divider); color:var(--text-muted); font-size:11px; padding:5px 12px; border-radius:14px; cursor:pointer;}
+
+  .panel{background:var(--panel); border:1px solid var(--divider); border-radius:12px; padding:20px; margin-bottom:22px;}
+  .panel h2{font-size:13px; letter-spacing:.04em; color:var(--navy); margin:0 0 16px; text-transform:uppercase; font-weight:800;}
+
+  .form-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:12px;}
+  .form-grid label{font-size:11px; color:var(--text-muted); display:block; margin-bottom:5px; font-weight:600;}
+  .form-grid input, .form-grid select{width:100%; font-family:'Inter',sans-serif; font-size:13px; background:var(--panel-2); border:1px solid var(--divider); color:var(--text-primary); padding:8px 10px; border-radius:6px;}
+  .form-actions{margin-top:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .msg{font-size:12px; color:var(--text-muted);}
+  .msg.error{color:var(--red);} .msg.success{color:var(--green);}
+
+  table{width:100%; border-collapse:collapse;}
+  th{text-align:left; font-size:11px; letter-spacing:.03em; color:var(--text-muted); padding:8px 10px; border-bottom:1px solid var(--divider); text-transform:uppercase; font-weight:700;}
+  td{padding:8px 10px; border-bottom:1px solid var(--divider); vertical-align:top;}
+  td input, td select{width:100%; font-family:'Inter',sans-serif; font-size:12px; background:var(--panel-2); border:1px solid var(--divider); color:var(--text-primary); padding:6px 8px; border-radius:5px;}
+  tr.flagged td{background:#FBEAE7;}
+  .flag-note{font-size:11px; color:var(--red); margin-top:4px; font-weight:600;}
+  .row-actions{display:flex; gap:6px; flex-wrap:wrap;}
+  .btn-sm{font-size:11px; font-weight:600; padding:6px 12px; border-radius:14px; border:1px solid var(--divider); background:var(--panel-2); color:var(--text-primary); cursor:pointer;}
+  .btn-sm:hover{border-color:var(--navy-2); color:var(--navy-2);}
+  .btn-sm.danger:hover{border-color:var(--red); color:var(--red);}
+  .btn-sm:focus-visible, input:focus-visible, select:focus-visible, button:focus-visible{outline:2px solid var(--focus); outline-offset:2px;}
+
+  @media (max-width:800px){
+    table, thead, tbody, th, td, tr{display:block;}
+    thead{display:none;}
+    tr{border-bottom:2px solid var(--divider); padding:12px 0; display:block;}
+    td{border-bottom:none; padding:6px 0;}
+    td::before{content: attr(data-label); display:block; font-family:'JetBrains Mono', monospace; font-size:10px; color:var(--text-muted); margin-bottom:3px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back-link" href="index.html">← Back to public board</a>
+  <h1 class="title">OpTrack — Staff</h1>
+  <div class="subtitle">ADD, EDIT, AND CLOSE OUT OPPORTUNITIES</div>
+
+  <div id="gate">
+    <p>Sign in with a GitHub personal access token. Only people with write access to this repo (added as a collaborator) will be able to save changes — everyone else can look but not touch.
+    <br><br>Don't have a token yet? On GitHub: Settings → Developer settings → Personal access tokens → Fine-grained tokens → generate one scoped to just this repo, with <strong>Contents: Read and write</strong> permission.</p>
+    <label for="tokenInput">GitHub personal access token</label>
+    <input type="password" id="tokenInput" autocomplete="off" placeholder="github_pat_…">
+    <div id="gateError">Couldn't verify that token. Double-check it and try again.</div>
+    <button id="gateBtn">Sign in</button>
+  </div>
+
+  <div id="app">
+    <div class="whoami">
+      <span id="whoamiText"></span>
+      <button id="signOutBtn">Sign out</button>
+      <button id="reloadBtn">↻ Reload from GitHub</button>
+    </div>
+
+    <div class="panel">
+      <h2>Add opportunity</h2>
+      <div class="form-grid">
+        <div><label>Name</label><input id="newName" type="text"></div>
+        <div><label>Type</label>
+          <select id="newType"><option>Internship</option><option>Scholarship</option></select>
+        </div>
+        <div><label>Link</label><input id="newLink" type="text" placeholder="https://…"></div>
+        <div><label>Status</label>
+          <select id="newStatus"><option>Open</option><option>On Hold</option><option>Close</option></select>
+        </div>
+        <div><label>Due date</label><input id="newDueDate" type="date"></div>
+        <div><label>Comments</label><input id="newComments" type="text"></div>
+      </div>
+      <div class="form-actions">
+        <button class="primary-btn" id="addBtn">Add opportunity</button>
+        <span class="msg" id="addMsg"></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>All opportunities</h2>
+      <table id="oppTable">
+        <thead>
+          <tr><th>Name</th><th>Type</th><th>Link</th><th>Status</th><th>Due date</th><th>Comments</th><th></th></tr>
+        </thead>
+        <tbody id="oppTbody"></tbody>
+      </table>
+      <div class="msg" id="tableMsg" style="margin-top:12px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- fill these in for your repo ----
+const OWNER  = "karlaaesme";
+const REPO   = "CIST4B1_AdvJava";
+const BRANCH = "main";
+const FILE_PATH = "docs/data.csv";
+// --------------------------------------
+
+const API_BASE = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
+
+let TOKEN = sessionStorage.getItem('optrack_gh_token') || '';
+let rows = [];      // in-memory opportunities, parsed from the CSV
+let currentSha = ''; // sha of the file version we last loaded, needed to save
+
+function authHeaders(){
+  return {
+    'Authorization': `token ${TOKEN}`,
+    'Accept': 'application/vnd.github+json'
+  };
+}
+
+// ---- base64 <-> UTF-8 safe text helpers ----
+function b64ToText(b64){
+  const bytes = Uint8Array.from(atob(b64.replace(/\n/g,'')), c => c.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
+function textToB64(text){
+  const bytes = new TextEncoder().encode(text);
+  let binary = '';
+  bytes.forEach(b => binary += String.fromCharCode(b));
+  return btoa(binary);
+}
+
+// ---- CSV helpers (mirror the Java parser) ----
+function parseCsvLine(line){
+  const out = []; let cur = ''; let inQuotes = false;
+  for (let i = 0; i < line.length; i++){
+    const c = line[i];
+    if (c === '"'){ inQuotes = !inQuotes; }
+    else if (c === ',' && !inQuotes){ out.push(cur); cur = ''; }
+    else { cur += c; }
+  }
+  out.push(cur);
+  return out;
+}
+function parseCSV(text){
+  const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+  const headers = parseCsvLine(lines[0]);
+  return lines.slice(1).map(line => {
+    const cols = parseCsvLine(line);
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = (cols[i] || '').trim());
+    return obj;
+  });
+}
+function csvSafe(field){
+  const f = (field === undefined || field === null) ? '' : String(field);
+  if (f.includes(',') || f.includes('"')) return '"' + f.replace(/"/g, '""') + '"';
+  return f;
+}
+function rowsToCSV(list){
+  const headers = ['ID','Name','Type','Link','Status','DueDate','Comments','Flagged','FlagNote'];
+  const lines = [headers.join(',')];
+  list.forEach(r => lines.push(headers.map(h => csvSafe(r[h])).join(',')));
+  return lines.join('\n') + '\n';
+}
+
+// ---- GitHub read/write ----
+async function fetchFile(){
+  const res = await fetch(`${API_BASE}?ref=${BRANCH}`, { headers: authHeaders() });
+  if (!res.ok) throw new Error(`GitHub returned ${res.status} while loading the file.`);
+  const json = await res.json();
+  currentSha = json.sha;
+  return parseCSV(b64ToText(json.content));
+}
+
+async function saveFile(newRows, message){
+  // re-fetch the latest sha right before saving, to avoid clobbering someone else's edit
+  const latest = await fetch(`${API_BASE}?ref=${BRANCH}`, { headers: authHeaders() });
+  if (!latest.ok) throw new Error(`GitHub returned ${latest.status} while checking the latest version.`);
+  const latestJson = await latest.json();
+
+  const res = await fetch(API_BASE, {
+    method: 'PUT',
+    headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message,
+      content: textToB64(rowsToCSV(newRows)),
+      sha: latestJson.sha,
+      branch: BRANCH
+    })
+  });
+  if (res.status === 403){
+    throw new Error("You're signed in, but don't have write access to this repo. Ask the project admin to add you as a collaborator.");
+  }
+  if (!res.ok){
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.message || `GitHub returned ${res.status} while saving.`);
+  }
+  return res.json();
+}
+
+function nextId(){
+  const max = rows.reduce((m, r) => Math.max(m, Number(r.ID) || 0), 0);
+  return String(max + 1);
+}
+
+// ---- sign in ----
+async function trySignIn(token){
+  const res = await fetch('https://api.github.com/user', {
+    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' }
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+document.getElementById('gateBtn').addEventListener('click', async () => {
+  const val = document.getElementById('tokenInput').value.trim();
+  document.getElementById('gateBtn').textContent = 'Checking…';
+  const user = await trySignIn(val);
+  document.getElementById('gateBtn').textContent = 'Sign in';
+  if (user){
+    TOKEN = val;
+    sessionStorage.setItem('optrack_gh_token', val);
+    document.getElementById('gateError').style.display = 'none';
+    enterApp(user.login);
+  } else {
+    document.getElementById('gateError').style.display = 'block';
+  }
+});
+
+document.getElementById('signOutBtn').addEventListener('click', () => {
+  sessionStorage.removeItem('optrack_gh_token');
+  TOKEN = '';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('gate').style.display = 'block';
+});
+
+document.getElementById('reloadBtn').addEventListener('click', loadAndRender);
+
+function enterApp(username){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('whoamiText').textContent = `Signed in as ${username}`;
+  loadAndRender();
+}
+
+async function loadAndRender(){
+  document.getElementById('tableMsg').textContent = 'Loading…';
+  try {
+    rows = await fetchFile();
+    renderTable();
+    document.getElementById('tableMsg').textContent = '';
+  } catch (err) {
+    document.getElementById('tableMsg').textContent = 'Failed to load: ' + err.message;
+    document.getElementById('tableMsg').className = 'msg error';
+  }
+}
+
+function renderTable(){
+  const tbody = document.getElementById('oppTbody');
+  tbody.innerHTML = rows.map(o => {
+    const flagged = o.Flagged === 'true' || o.Flagged === 'TRUE' || o.Flagged === true;
+    return `
+    <tr data-id="${o.ID}" class="${flagged ? 'flagged' : ''}">
+      <td data-label="Name">
+        <input type="text" class="f-name" value="${(o.Name||'').replace(/"/g,'&quot;')}">
+        ${flagged ? `<div class="flag-note">⚠ Flagged: ${o.FlagNote || 'check this listing'}</div>` : ''}
+      </td>
+      <td data-label="Type">
+        <select class="f-type">
+          <option ${o.Type==='Internship'?'selected':''}>Internship</option>
+          <option ${o.Type==='Scholarship'?'selected':''}>Scholarship</option>
+        </select>
+      </td>
+      <td data-label="Link"><input type="text" class="f-link" value="${(o.Link||'').replace(/"/g,'&quot;')}"></td>
+      <td data-label="Status">
+        <select class="f-status">
+          <option ${o.Status==='Open'?'selected':''}>Open</option>
+          <option ${o.Status==='On Hold'?'selected':''}>On Hold</option>
+          <option ${o.Status==='Close'?'selected':''}>Close</option>
+        </select>
+      </td>
+      <td data-label="Due date"><input type="date" class="f-due" value="${o.DueDate||''}"></td>
+      <td data-label="Comments"><input type="text" class="f-comments" value="${(o.Comments||'').replace(/"/g,'&quot;')}"></td>
+      <td data-label="Actions">
+        <div class="row-actions">
+          <button class="btn-sm save-btn">Save</button>
+          ${flagged ? '<button class="btn-sm clear-flag-btn">Clear flag</button>' : ''}
+          <button class="btn-sm danger delete-btn">Delete</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('tr').forEach(tr => {
+    const id = tr.dataset.id;
+
+    tr.querySelector('.save-btn').addEventListener('click', async () => {
+      const idx = rows.findIndex(r => r.ID === id);
+      if (idx === -1) return;
+      rows[idx] = {
+        ...rows[idx],
+        Name: tr.querySelector('.f-name').value,
+        Type: tr.querySelector('.f-type').value,
+        Link: tr.querySelector('.f-link').value,
+        Status: tr.querySelector('.f-status').value,
+        DueDate: tr.querySelector('.f-due').value,
+        Comments: tr.querySelector('.f-comments').value
+      };
+      await commit('Update opportunity: ' + rows[idx].Name);
+    });
+
+    const clearBtn = tr.querySelector('.clear-flag-btn');
+    if (clearBtn){
+      clearBtn.addEventListener('click', async () => {
+        const idx = rows.findIndex(r => r.ID === id);
+        if (idx === -1) return;
+        rows[idx] = { ...rows[idx], Flagged: 'false', FlagNote: '' };
+        await commit('Clear flag: ' + rows[idx].Name);
+      });
+    }
+
+    tr.querySelector('.delete-btn').addEventListener('click', async () => {
+      if (!confirm('Delete this opportunity permanently?')) return;
+      rows = rows.filter(r => r.ID !== id);
+      await commit('Delete opportunity id ' + id);
+    });
+  });
+}
+
+async function commit(message){
+  document.getElementById('tableMsg').textContent = 'Saving…';
+  document.getElementById('tableMsg').className = 'msg';
+  try {
+    await saveFile(rows, message);
+    document.getElementById('tableMsg').textContent = 'Saved.';
+    document.getElementById('tableMsg').className = 'msg success';
+    await loadAndRender();
+  } catch (err) {
+    document.getElementById('tableMsg').textContent = 'Error: ' + err.message;
+    document.getElementById('tableMsg').className = 'msg error';
+  }
+}
+
+document.getElementById('addBtn').addEventListener('click', async () => {
+  const name = document.getElementById('newName').value.trim();
+  const dueDate = document.getElementById('newDueDate').value;
+  if (!name || !dueDate){
+    document.getElementById('addMsg').textContent = 'Name and due date are required.';
+    document.getElementById('addMsg').className = 'msg error';
+    return;
+  }
+  const newRow = {
+    ID: nextId(),
+    Name: name,
+    Type: document.getElementById('newType').value,
+    Link: document.getElementById('newLink').value.trim(),
+    Status: document.getElementById('newStatus').value,
+    DueDate: dueDate,
+    Comments: document.getElementById('newComments').value.trim(),
+    Flagged: 'false',
+    FlagNote: ''
+  };
+  rows.push(newRow);
+  document.getElementById('addMsg').textContent = 'Saving…';
+  document.getElementById('addMsg').className = 'msg';
+  try {
+    await saveFile(rows, 'Add opportunity: ' + name);
+    document.getElementById('addMsg').textContent = 'Added!';
+    document.getElementById('addMsg').className = 'msg success';
+    ['newName','newLink','newComments'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('newDueDate').value = '';
+    await loadAndRender();
+  } catch (err) {
+    rows.pop(); // roll back the optimistic add
+    document.getElementById('addMsg').textContent = 'Error: ' + err.message;
+    document.getElementById('addMsg').className = 'msg error';
+  }
+});
+
+// auto sign-in if we already have a session token
+if (TOKEN){
+  trySignIn(TOKEN).then(user => {
+    if (user) enterApp(user.login);
+  });
+}
+</script>
+</body>
+</html>
